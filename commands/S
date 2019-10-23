@@ -1,0 +1,14 @@
+#!/bin/bash
+
+PYFILE=../stitcher.py
+
+FILE=/media/ostocker/Data/OS/test_toulouse_SPOT7/v31_marseille
+#Required
+DIR=$FILE/stepCrossVal_0/drawings
+
+#others
+REC=True
+NODATA=99
+VRT=true
+
+python $PYFILE -dir $DIR -rec $REC -nodata $NODATA -vrt $VRT

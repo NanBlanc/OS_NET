@@ -1,0 +1,33 @@
+#!/bin/bash
+
+PYFILE=../tailor.py
+
+FILE=/media/ostocker/Data/OS/data_storage/marseille/test
+#Required
+OUT=/media/ostocker/ExtremeSSD/storage/spot7/mars/tiles_pxs
+GT=/home/ostocker/deep/data/mars_6c
+IMG=/media/ostocker/Data/OS/data_storage/marseille/spot_crop.tif
+
+#false or path
+NOMENCLATURE=false
+BAND_NORM=false
+COLOR=false
+NODATA_MASK=/media/ostocker/Data/OS/data_storage/marseille/zone_no_data_crop.shp
+
+#true or false
+CREATE_GT=true
+CREATE_TILE=true
+CREATE_SELECT=true	#
+DISCARD_NOIMG=true	#to drop tiles where all channels are at 0
+VERIF_NODATA=false      #if you do not trust your mask : makes sure you do not have 0-on-all-channels  annotated pixels /!\ may disturb your image
+
+#values
+MARGIN=30		 #in pixels
+X=264
+Y=256
+NODATA_VALUE=99
+
+
+python $PYFILE -out $OUT -gt $GT -img $IMG -margin $MARGIN -x $X -y $Y -color $COLOR -create_gt $CREATE_GT -create_tile $CREATE_TILE -create_select $CREATE_SELECT -nodata_value $NODATA_VALUE -nodata_mask $NODATA_MASK -discard $DISCARD_NOIMG -verif_nodata $VERIF_NODATA -nomenclature $NOMENCLATURE
+
+

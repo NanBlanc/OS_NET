@@ -1,0 +1,6 @@
+#!/bin/bash
+
+bash absolute/path/to/T
+bash absolute/path/to/M
+bash absolute/path/to/D
+bash absolute/path/to/S

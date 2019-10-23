@@ -55,7 +55,7 @@ class SavePerf:
         self.list_loss_register[dataset_instance].append(i_epoch)
         if show:
             #color given the dataset instance
-            if dataset_instance==0: color = (19,161,14
+            if dataset_instance==0: color = (19,161,14)
             elif dataset_instance==1: color = (193,156,0)
             else: color = (204,0,0)
             print(ost.PRINTCOLOR(*color),end="")#set color

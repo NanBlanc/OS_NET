@@ -15,7 +15,7 @@ import pickle
 import sys
 
 import OSToolBox as ost
-import NN_builder_v2 as nb
+import NN_builder as nb
 import metrics as m
 import data_reader as reader
 

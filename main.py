@@ -24,7 +24,7 @@ import torch.optim as optim
 from torch.utils import data
 
 import OSToolBox as ost
-import NN_builder_v2 as nb
+import NN_builder as nb
 import metrics as met
 import data_reader as reader
 import selecter as selec

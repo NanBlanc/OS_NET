@@ -125,7 +125,6 @@ def multiprocessing_func(mlparg):
     nodata_value=mlparg[0].nodata_value
     verif_nodata=mlparg[0].verif_nodata
     
-    count=mlparg[1]
     list_border_norm=mlparg[2]
     ulx,uly,tsx,tsy, imgAP, gtAP,img_tile, gt_tile=mlparg[3]
     
@@ -145,7 +144,7 @@ def multiprocessing_func(mlparg):
                 #fast way : calculate hist with large bucket so all pix fall in but not nodata pix so if only no data hist = 0
                 # WARNING : IMG SHOULD HAVE A NODATA VALUE SET
                 # this generate .aux.xml files
-                hist=out_ras.GetRasterBand(i).GetHistogram(min=0, max=65536, buckets=1, approx_ok=False)
+                hist=out_ras.GetRasterBand(i).GetHistogram(min=1, max=65536, buckets=1, approx_ok=False)
                 tot+=np.sum(hist)
             if tot==0:
                 discarded=True
@@ -192,7 +191,7 @@ def multiprocessing_func(mlparg):
         out_ds.FlushCache()
     
     if discarded:
-        return count
+       return ost.pathLeafExt(img_tile),ost.pathLeafExt(gt_tile)
     else:
         return False
 
@@ -286,7 +285,7 @@ def megaTailor(args):
         prop = np.array(hist[0:len(names)])
         propPercent=100*prop/np.sum(prop)
         
-        totalPix= dsGT.RasterXSize*dsGT.RasterXSize
+        totalPix= dsGT.RasterXSize*dsGT.RasterYSize
         propPercentTotal=100*prop/totalPix
         str_rep='GT size = '+str(args.x)+'*'+str(args.y)+'*'+str(lenght_dataset)+' with '+str(int(np.sum(prop)))+'/'+str(totalPix)+' labeled pixels\n'+\
                 "Dataset repartition :\n"+\
@@ -372,13 +371,27 @@ def megaTailor(args):
             
     #generating tiles with instruction
     print("Generating tiles...")
+    list_discarded=[]
     with multiprocessing.Pool() as pool:
-        for _ in tqdm(pool.imap_unordered(multiprocessing_func, instruc_list),total=len(instruc_list)):
-            pass
+        for dis in tqdm(pool.imap_unordered(multiprocessing_func, instruc_list),total=len(instruc_list)):
+            if dis is not False:
+                list_discarded.append(dis)
+    
+    #register discarded tiles
+    if args.discard is True :
+       dis_file=outAP+"/discarded_tiles.txt"
+       np.savetxt(dis_file,list_discarded,fmt='%s')
+   #delete GT tiles if no img tiles and discard_file is given
+    if args.discard_file is not False and args.create_tile is False:
+        print("Suppressing tiles according to discard file :",args.discard_file,)
+        list_discarded=np.genfromtxt(args.discard_file,dtype='str')
+        for (ti,tg) in list_discarded :
+            try:os.remove(out_gt+"/"+tg) #delete
+            except:pass
     
     #rename tiles if discard operation to be sure to have all tiles with number from 0 to n without missing ones
     #renaming is vital for selecter algorithm
-    if args.discard:
+    if args.discard or args.discard_file is not False:
         print("Renaming tiles...")
         if args.create_tile :
             to_rename_img=ost.getFileByExt(out_tiles,".tif")
@@ -451,9 +464,9 @@ def megaTailor(args):
         out_selec = ost.createDir(outAP+"/data_selection")
         out_shp_index=ost.pathLeaf(out_selec)+"/all_index.shp"
         try :
-            num=names_list_img
+            num=ost.getFileByExt(out_tiles,".tif")
         except:
-            num=names_list_gt
+            num=ost.getFileByExt(out_gt,".tif")
         gdalTIndex_instruc=["gdaltindex","-f","ESRI Shapefile","-t_srs","EPSG:2154",out_shp_index,*num]
         subprocess.call(gdalTIndex_instruc,stdout=subprocess.DEVNULL)
         os.chdir(current)#move current console position orignel one
@@ -493,7 +506,7 @@ if __name__ == '__main__':
     parser.add_argument("-nomenclature", type=ost.SFParser, help="link to nomenclature if img", default=False, required=False)
     parser.add_argument("-color", type=ost.SFParser, help="path to color txt file as value,r,g,b,a per line for each value to color", default=False, required=False)
     parser.add_argument("-nodata_mask", type=ost.SFParser, help="path to nodata mask", default=False, required=False)
-
+    parser.add_argument("-discard_file", type=ost.SFParser, help="path to discarded tiles", default=False, required=False)
 
     args = parser.parse_args()
     megaTailor(args)

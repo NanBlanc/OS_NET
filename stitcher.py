@@ -32,7 +32,7 @@ def main(args):
     
     #recursive stitching
     for path in tqdm(l):
-	path=os.path.abspath(path)
+        path=os.path.abspath(path)
         current=os.getcwd()#save current console position
         os.chdir(ost.pathBranch(path))#move current console position to outAP to save instruction lenght
         

@@ -172,7 +172,7 @@ def selecter(args):
                     tile_num=None
                     while tile_num is None :
                         try :
-                            tile_num=int(name.split("_")[index])
+                            tile_num=int(ost.pathLeaf(name).split("_")[index])
 #                            print(index)
                         except:
                             index+=1

@@ -13,6 +13,7 @@ NOMENCLATURE=false
 BAND_NORM=false
 COLOR=false
 NODATA_MASK=/media/ostocker/Data/OS/data_storage/marseille/zone_no_data_crop.shp
+DISCARD_FILE=false
 
 #true or false
 CREATE_GT=true
@@ -28,6 +29,6 @@ Y=256
 NODATA_VALUE=99
 
 
-python $PYFILE -out $OUT -gt $GT -img $IMG -margin $MARGIN -x $X -y $Y -color $COLOR -create_gt $CREATE_GT -create_tile $CREATE_TILE -create_select $CREATE_SELECT -nodata_value $NODATA_VALUE -nodata_mask $NODATA_MASK -discard $DISCARD_NOIMG -verif_nodata $VERIF_NODATA -nomenclature $NOMENCLATURE
+python $PYFILE -out $OUT -gt $GT -img $IMG -margin $MARGIN -x $X -y $Y -color $COLOR -create_gt $CREATE_GT -create_tile $CREATE_TILE -create_select $CREATE_SELECT -nodata_value $NODATA_VALUE -nodata_mask $NODATA_MASK -discard $DISCARD_NOIMG -verif_nodata $VERIF_NODATA -nomenclature $NOMENCLATURE -band_norm $BAND_NORM -discard_file $DISCARD_FILE
 
 
